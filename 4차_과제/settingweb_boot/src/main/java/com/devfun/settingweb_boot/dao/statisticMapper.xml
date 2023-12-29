@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.devfun.settingweb_boot.dao.StatisticMapper">
+
+	<select id="selectYearLogin" parameterType="string"
+		resultType="statisticDto">
+		SELECT COUNT(*) AS TOTCNT
+		FROM STATISTC.REQUESTINFO AS RI
+		WHERE LEFT(RI.CREATEDATE, 2) = #{YEAR};
+	</select>
+
+	<select id="selectMonthUser" parameterType="string"
+		resultType="statisticDto">
+		SELECT
+			COUNT(*) AS TOTCNT
+		FROM
+			STATISTC.REQUESTINFO AS RI
+		WHERE
+			SUBSTR(RI.CREATEDATE, 3, 2) = #{MONTH}
+		;
+	</select>
+
+	<select id="selectDayUser" parameterType="string"
+		resultType="statisticDto">
+		SELECT
+			COUNT(*) AS TOTCNT
+		FROM
+			STATISTC.REQUESTINFO AS RI
+		WHERE
+			SUBSTR(RI.CREATEDATE, 5, 2) = #{DAY}
+		;
+	</select>
+
+	<select id="selectAvgUser" resultType="avgStatisticDto">
+		SELECT
+			AVG(TEMP.TOTCNT) AS AVGCNT
+		FROM
+			(SELECT
+				COUNT(*) AS TOTCNT
+			FROM
+				STATISTC.REQUESTINFO AS RI
+			GROUP BY
+				RI.CREATEDATE) AS TEMP
+		;
+	</select>
+	
+	<select id="selectLoginExceptHoliday" parameterType="java.util.List" resultType="statisticDto">
+		SELECT
+			COUNT(*) AS TOTCNT
+		FROM
+			STATISTC.REQUESTINFO AS RI
+		WHERE
+			LEFT(RI.CREATEDATE, 6) NOT IN 
+			<foreach collection="holiday" item="item" index="index" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		;
+	</select>
+	
+	<select id="selectLoginOrganMonth" parameterType="statisticRequestDto" resultType="statisticDto">
+		SELECT
+			COUNT(*) AS TOTCNT
+		FROM
+			STATISTC.REQUESTINFO AS RI
+			INNER JOIN STATISTC.USER AS U
+			ON RI.USERID = U.USERID
+		WHERE
+			U.HR_ORGAN = #{organ} AND
+			SUBSTR(RI.CREATEDATE, 3, 2) = #{month}
+		;
+	</select>
+</mapper>
