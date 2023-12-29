@@ -22,7 +22,7 @@ WHERE
 ### 3. 평균 하루 로그인 수
 ```
 SELECT
-	AVG(*) AS AVGCNT
+	AVG(TEMP.TOTCNT) AS AVGCNT
 FROM
 	(SELECT
 		COUNT(*) AS TOTCNT
@@ -50,7 +50,7 @@ FROM
     	ON RI.USERID = U.USERID
 WHERE
         U.HR_ORGAN = #{ORGAN} AND
-        SUBSTR(RI.CREATEDATE, 5, 2) = #{MONTH}
+        SUBSTR(RI.CREATEDATE, 3, 2) = #{MONTH}
 ```
 
 # 3차 과제 주간 보고
